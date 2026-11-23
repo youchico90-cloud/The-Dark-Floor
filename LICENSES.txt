@@ -1,0 +1,68 @@
+ANOMALY CORRIDOR — LICENSES AND THIRD-PARTY NOTICES
+====================================================
+
+1. GAME
+-------
+Anomaly Corridor
+Copyright (c) 2026 [Zhandos /Bluepeak Games]. All rights reserved.
+(Game code, in-game procedural textures, character models and procedurally
+generated sound effects are original work of the author.)
+
+2. THREE.JS (3D engine) — MIT License
+-------------------------------------
+Used: three.min.js (r128) and the following files from three.js "examples/js":
+CopyShader, GammaCorrectionShader, VignetteShader, FilmShader, EffectComposer,
+RenderPass, MaskPass, ShaderPass, LuminosityHighPassShader, UnrealBloomPass,
+FilmPass.
+Source: https://threejs.org  /  https://github.com/mrdoob/three.js
+
+The MIT License
+
+Copyright © 2010-2021 three.js authors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+
+3. SOUND
+--------
+3.1 Sound effects and ambience (footsteps, hum, heartbeat, drips, creaks,
+    flashlight clicks, etc.) are generated in real time by the game code using
+    the Web Audio API. No third-party recordings are used for them.
+
+3.2 Door sound (file: door.mp3)
+    Title:   "Door Opening Slowly 1"
+    Author:  YodGuard
+    Source:  https://audio.com/autumn-canyon/audio/door-opening-slowly-1-by-yodguard-royalty-free-music-564535
+    License: royalty-free, as stated on the source page.
+    !! Before selling the game, open the source page and confirm that the
+       license allows COMMERCIAL use in a game and whether attribution is
+       required. Save a copy/screenshot of the license terms.
+    !! If you do not ship door.mp3, delete this section and the "Door sound"
+       line in the in-game Credits (index.html / lang.js, key credits.door).
+
+4. TEXTURES (optional)
+----------------------
+The game works without a "textures" folder (it uses procedurally generated
+textures). If you add PBR texture files (textures/concrete_*, floor_*, wood_*),
+list each one here with its author, source URL and license (for example CC0
+from ambientCG or Poly Haven), and keep the license proof.
+
+5. FONTS
+--------
+The game uses the system "monospace" font. No font files are distributed.

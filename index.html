@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Anomaly Corridor - Horror Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- БАС МЕНЮ -->
+    <div id="main-menu">
+        <h1 class="game-title">Anomaly Corridor</h1>
+        <p class="menu-progress" id="menu-progress">Ашылған аномалиялар: 0 / 40</p>
+        <button class="menu-btn" onclick="startGame()" data-i18n="menu.start" disabled>Бастау</button>
+        <button class="menu-btn" onclick="openCharacterModal()" data-i18n="menu.character" disabled>Кейіпкер</button>
+        <button class="menu-btn" onclick="openInstructions()" data-i18n="menu.instructions" disabled>Нұсқаулық</button>
+        <button class="menu-btn" onclick="openSettings()" data-i18n="menu.settings" disabled>Параметрлер</button>
+        <button class="menu-btn" id="lang-btn" onclick="cycleLanguage()" disabled>Тіл: Қазақша</button>
+    </div>
+
+    <!-- КЕЙІПКЕР ТАҢДАУ ТЕРЕЗЕСІ -->
+    <div id="character-modal">
+        <h2 data-i18n="char.title">КЕЙІПКЕР</h2>
+        <div class="char-controls-row">
+            <button type="button" class="char-nav-btn" id="char-prev-btn" onclick="prevCharacter()" data-i18n-label="char.prev" aria-label="Алдыңғы кейіпкер">◀</button>
+            <div id="char-preview-wrap">
+                <canvas id="char-preview-canvas"></canvas>
+                <div id="char-empty-label" data-i18n="char.invisible">Көрінбейді</div>
+            </div>
+            <button type="button" class="char-nav-btn" id="char-next-btn" onclick="nextCharacter()" data-i18n-label="char.next" aria-label="Келесі кейіпкер">▶</button>
+        </div>
+        <div id="char-name"></div>
+        <p id="char-desc"></p>
+        <div id="char-status"></div>
+        <div class="char-btn-row">
+            <button type="button" class="menu-btn" id="char-select-btn" onclick="selectPreviewCharacter()">Таңдау</button>
+            <button type="button" class="menu-btn" id="char-back-btn" onclick="closeCharacterModal()" data-i18n="common.back">Артқа</button>
+        </div>
+    </div>
+
+    <!-- ЖЕҢІС ТЕРЕЗЕСІ -->
+    <div id="victory-modal">
+        <h1 class="victory-title" data-i18n="victory.title">ЖЕҢІС</h1>
+        <p class="victory-sub" data-i18n="victory.sub">Сіз барлық 8 кезеңнен өтіп, дәліздің құпиясын ашып шықтыңыз.</p>
+        <div class="victory-stats">
+            <div class="stat-box">
+                <div class="stat-label" data-i18n="victory.time">Уақыт</div>
+                <div class="stat-value" id="victory-time">00:00</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label" data-i18n="victory.mistakes">Қателер</div>
+                <div class="stat-value" id="victory-mistakes">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label" data-i18n="victory.anomalies">Аномалиялар</div>
+                <div class="stat-value" id="victory-anomalies">0/40</div>
+            </div>
+        </div>
+        <button class="menu-btn" onclick="restartGame()" data-i18n="victory.restart">Қайта бастау</button>
+        <button class="menu-btn" onclick="goToMainMenu()" data-i18n="victory.menu">Мәзір</button>
+    </div>
+
+    <!-- ТОЛЫҚ ЭКРАН ЖӘНЕ ПАУЗА БАТЫРМАЛАРЫ -->
+    <button id="fs-btn" data-i18n="btn.fullscreen" onclick="event.stopPropagation(); toggleFullscreen()">⛶ ТОЛЫҚ ЭКРАН</button>
+    <button id="pause-btn" data-i18n="btn.pause" onclick="event.stopPropagation(); pauseGame()">⏸ ПАУЗА</button>
+
+    <!-- ПАУЗА МӘЗІРІ -->
+    <div id="pause-menu">
+        <h2 data-i18n="pause.title">ПАУЗА</h2>
+        <button class="menu-btn" onclick="resumeGame()" data-i18n="pause.resume">Жалғастыру</button>
+        <button class="menu-btn" onclick="openSettings()" data-i18n="menu.settings">Параметрлер</button>
+        <button class="menu-btn" onclick="goToMainMenu()" data-i18n="victory.menu">Мәзір</button>
+    </div>
+
+    <!-- ПАРАМЕТРЛЕР ТЕРЕЗЕСІ -->
+    <div id="settings-modal">
+        <h2 data-i18n="settings.title">ПАРАМЕТРЛЕР</h2>
+        <div class="settings-section" data-i18n="settings.secLang">ТІЛ</div>
+        <div class="setting-row">
+            <label for="lang-select" data-i18n="settings.language">Тіл</label>
+            <select id="lang-select" onchange="setLanguage(this.value)">
+                <option value="kk">Қазақша</option>
+                <option value="ru">Русский</option>
+                <option value="en">English</option>
+            </select>
+        </div>
+        <div class="settings-section" data-i18n="settings.secAudio">ДЫБЫС ЖӘНЕ БАСҚАРУ</div>
+        <div class="setting-row">
+            <label for="volume-slider" data-i18n="settings.volume">Дыбыс деңгейі</label>
+            <input type="range" id="volume-slider" min="0" max="100" step="1" value="80">
+            <span id="volume-value">80%</span>
+        </div>
+        <div class="setting-row">
+            <label for="sensitivity-slider" data-i18n="settings.sensitivity">Қарау сезгіштігі</label>
+            <input type="range" id="sensitivity-slider" min="20" max="300" step="5" value="100">
+            <span id="sensitivity-value">100%</span>
+        </div>
+        <div class="settings-section" data-i18n="settings.secGfx">ГРАФИКА</div>
+        <div class="setting-row">
+            <label for="quality-select" data-i18n="settings.quality">Сапа</label>
+            <select id="quality-select">
+                <option value="auto" data-i18n="settings.auto">Авто</option>
+                <option value="high" data-i18n="settings.high">Жоғары</option>
+                <option value="medium" data-i18n="settings.medium">Орташа</option>
+                <option value="low" data-i18n="settings.low">Төмен</option>
+            </select>
+            <span class="setting-sub" style="display:inline" id="quality-current"></span>
+        </div>
+        <div class="setting-row">
+            <label for="flash-shadow-select" data-i18n="settings.flashShadow">Фонарик көлеңкесі</label>
+            <select id="flash-shadow-select">
+                <option value="auto" data-i18n="settings.auto">Авто</option>
+                <option value="every" data-i18n="settings.everyFrame">Әр кадр</option>
+                <option value="half" data-i18n="settings.half">Жартылай</option>
+                <option value="off" data-i18n="settings.off">Өшірулі</option>
+            </select>
+        </div>
+        <div class="setting-row">
+            <label for="res-slider" data-i18n="settings.resolution">Ажыратымдылық</label>
+            <input type="range" id="res-slider" min="40" max="100" step="5" value="100">
+            <span id="res-value">100%</span>
+        </div>
+        <div class="setting-row">
+            <label for="auto-res" data-i18n="settings.autoRes">Авто-ажыратымдылық</label>
+            <input type="checkbox" id="auto-res" checked>
+        </div>
+        <div class="setting-row">
+            <label for="fx-bloom" data-i18n="settings.bloom">Bloom (жарқырау)</label>
+            <input type="checkbox" id="fx-bloom" checked>
+            <span class="setting-sub" data-i18n="settings.unavailable">бұл сапада жоқ</span>
+        </div>
+        <div class="setting-row">
+            <label for="fx-film" data-i18n="settings.film">Film grain</label>
+            <input type="checkbox" id="fx-film" checked>
+            <span class="setting-sub" data-i18n="settings.unavailable">бұл сапада жоқ</span>
+        </div>
+        <div class="setting-row">
+            <label for="fx-beam" data-i18n="settings.beam">Фонарик сәулесі</label>
+            <input type="checkbox" id="fx-beam" checked>
+            <span class="setting-sub" data-i18n="settings.unavailable">бұл сапада жоқ</span>
+        </div>
+        <div class="setting-row">
+            <label for="fx-glow" data-i18n="settings.glow">Шам жарқырауы</label>
+            <input type="checkbox" id="fx-glow" checked>
+            <span class="setting-sub" data-i18n="settings.unavailable">бұл сапада жоқ</span>
+        </div>
+        <div class="setting-row">
+            <label for="fx-decor" data-i18n="settings.decor">Дақтар мен көлеңке</label>
+            <input type="checkbox" id="fx-decor" checked>
+            <span class="setting-sub" data-i18n="settings.unavailable">бұл сапада жоқ</span>
+        </div>
+        <div class="setting-row">
+            <label for="show-fps" data-i18n="settings.showFps">FPS көрсету</label>
+            <input type="checkbox" id="show-fps">
+        </div>
+        <p id="quality-note" data-i18n="settings.qualityNote">Сапа өзгерісі бетті қайта жүктегенде қолданылады (ойын 0-этаптан басталады). URL-дағы ?q= параметрі болса, ол басым.</p>
+        <button id="quality-reload" class="menu-btn" style="display:none" onclick="location.reload()" data-i18n="settings.apply">Қолдану (қайта жүктеу)</button>
+        <button class="menu-btn" onclick="closeSettings()" data-i18n="common.back">Артқа</button>
+    </div>
+
+    <!-- НҰСҚАУЛЫҚ ТЕРЕЗЕСІ -->
+    <div id="instructions-modal">
+        <h2 data-i18n="help.title">НҰСҚАУЛЫҚ</h2>
+        <ul>
+            <li data-i18n-html="help.goal"><b>Мақсат:</b> дәлізді соңына дейін мұқият тексеріп, аномалияны табу (0-этап — үлгі дәліз).</li>
+            <li data-i18n-html="help.noAnomaly"><b>Аномалия жоқ</b> болса — алдыңғы есікке қарай жүріңіз.</li>
+            <li data-i18n-html="help.anomaly"><b>Аномалия бар</b> болса — артқа қайтып, артқы есікке барыңыз.</li>
+            <li data-i18n-html="help.attention"><b>Назар аударыңыз:</b> экранда өте сирек әрі кенеттен шығатын скримерлер <b>аномалия болып саналмайды</b> — аномалия тек дәліздегі объектілердің өзгерісі.</li>
+            <li data-i18n-html="help.mistake">Қателессеңіз — 0-этапқа қайта ораласыз. Жеңу үшін 8 кезеңнен өтіңіз.</li>
+            <li data-i18n-html="help.pc"><b>Компьютер:</b> W A S D (жүру), Shift (жүгіру), Space (отыру), F (фонарик), Тышқан (қарау).</li>
+            <li data-i18n-html="help.mobile"><b>Телефон:</b> сол жақ джойстик (жүру), экранды сипау (қарау), оң жақ батырмалар (шам, жүгіру, отыру).</li>
+        </ul>
+        <button class="menu-btn" onclick="closeInstructions()" data-i18n="common.back">Артқа</button>
+    </div>
+
+    <!-- МОБИЛЬДІ СЕНСОРЛЫ БАСҚАРУ -->
+    <div id="mobile-controls">
+        <div id="look-zone"></div>
+        <div id="joystick-zone">
+            <div id="joystick-knob"></div>
+        </div>
+        <div id="mobile-actions">
+            <button type="button" class="mob-btn" id="mob-crouch"><span class="ico">⬇</span>ОТЫРУ</button>
+            <button type="button" class="mob-btn active" id="mob-flash"><span class="ico">🔦</span>ШАМ</button>
+            <button type="button" class="mob-btn" id="mob-sprint"><span class="ico">⚡</span>ЖҮГІРУ</button>
+        </div>
+    </div>
+
+    <div id="panic-vignette"></div>
+    <div id="fade"></div>
+    <div id="error-toast"></div>
+    <div id="lock-hint" data-i18n="hud.lockHint">Жалғастыру үшін экранды басыңыз</div>
+    <div id="stage-hint" data-i18n="hud.stageHint">0-ЭТАП: Бұл қалыпты дәліз. Заттардың орнын, түсін және шамдарды есте сақтаңыз.</div>
+    <div id="stamina-wrap"><div id="stamina-fill"></div></div>
+    <div id="crosshair"></div>
+    <div id="instructions" data-i18n="hud.controls">Жүру: WASD | Жүгіру: Shift | Отыру: Space | Фонарик: F</div>
+
+    <script>
+        (function () {
+            function loadOne(src) {
+                return new Promise(function (resolve, reject) {
+                    var s = document.createElement('script');
+                    s.src = src;
+                    s.async = false;
+                    s.onload = resolve;
+                    s.onerror = reject;
+                    document.body.appendChild(s);
+                });
+            }
+
+            function loadScripts(list) {
+                return list.reduce(function (p, item) {
+                    return p.then(function () {
+                        if (typeof item === 'string') return loadOne(item);
+                        return loadOne(item.local).catch(function () {
+                            return loadOne(item.cdn);
+                        }).catch(function () {
+                            if (item.required) throw new Error(item.local);
+                        });
+                    });
+                }, Promise.resolve());
+            }
+
+            function showLoadError() {
+                var menu = document.getElementById('main-menu');
+                if (!menu) return;
+                var msg = document.createElement('p');
+                msg.style.color = '#e00000';
+                msg.style.fontSize = '16px';
+                msg.style.margin = '12px 0';
+                msg.textContent = 'Ойын файлдары жүктелмеді. Интернетті тексеріп, бетті жаңартыңыз.';
+                menu.appendChild(msg);
+            }
+
+            loadScripts([
+                'lang.js',
+                { local: 'libs/three.min.js', cdn: 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js', required: true }
+            ]).then(function () {
+                if (typeof THREE === 'undefined') throw new Error('THREE');
+                return loadScripts([
+                    { local: 'libs/CopyShader.js', cdn: 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js' },
+                    { local: 'libs/GammaCorrectionShader.js', cdn: 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/GammaCorrectionShader.js' },
+                    { local: 'libs/VignetteShader.js', cdn: 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/VignetteShader.js' },
+                    { local: 'libs/FilmShader.js', cdn: 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/FilmShader.js' },
+                    { local: 'libs/EffectComposer.js', cdn: 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js' },
+                    { local: 'libs/RenderPass.js', cdn: 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js' },
+                    { local: 'libs/MaskPass.js', cdn: 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/MaskPass.js' },
+                    { local: 'libs/ShaderPass.js', cdn: 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js' },
+                    { local: 'libs/LuminosityHighPassShader.js', cdn: 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js' },
+                    { local: 'libs/UnrealBloomPass.js', cdn: 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js' },
+                    { local: 'libs/FilmPass.js', cdn: 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/FilmPass.js' },
+                    'audio.js',
+                    'scares.js',
+                    'anomalies.js',
+                    'character.js',
+                    'main.js'
+                ]);
+            }).then(function () {
+                var btns = document.querySelectorAll('#main-menu .menu-btn');
+                for (var i = 0; i < btns.length; i++) btns[i].disabled = false;
+            }).catch(showLoadError);
+        })();
+    </script>
+</body>
+</html>
