@@ -592,3 +592,205 @@ html, body {
 .char-btn-row .menu-btn {
     touch-action: manipulation;
 }
+
+/* =====================================================================
+   МОБИЛЬДІ ЖӘНЕ КӨЛДЕНЕҢ ЭКРАНҒА БЕЙІМДЕУ
+   ===================================================================== */
+html, body {
+    height: 100%;
+    height: 100dvh;
+    overscroll-behavior: none;
+}
+
+/* Барлық терезе қауіпсіз аймақты (ойық, жиек) ескереді және өз ішінде жылжиды */
+#main-menu, #instructions-modal, #settings-modal, #character-modal, #pause-menu, #victory-modal {
+    padding-top: max(16px, env(safe-area-inset-top));
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+    touch-action: pan-y;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Мазмұн сыймай қалса да жоғарғы жағы қиылмайды (ортаға тураланады, сыймаса жылжиды) */
+#main-menu::before, #main-menu::after,
+#instructions-modal::before, #instructions-modal::after,
+#pause-menu::before, #pause-menu::after,
+#victory-modal::before, #victory-modal::after {
+    content: '';
+    margin: auto;
+}
+
+/* Тік қалып ескертуі */
+#rotate-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 500;
+    background: #000;
+    color: #ddd;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-family: monospace;
+    padding: 24px;
+    box-sizing: border-box;
+    touch-action: manipulation;
+}
+#rotate-overlay .rot-ico {
+    font-size: 72px;
+    margin-bottom: 18px;
+    animation: rotHint 2.4s ease-in-out infinite;
+}
+#rotate-overlay p {
+    margin: 0 0 8px 0;
+    font-size: 20px;
+    letter-spacing: 2px;
+    color: #e8e8e8;
+}
+#rotate-overlay p.rot-sub {
+    font-size: 13px;
+    letter-spacing: 1px;
+    color: #888;
+    line-height: 1.6;
+}
+@keyframes rotHint {
+    0%, 30% { transform: rotate(0deg); }
+    70%, 100% { transform: rotate(-90deg); }
+}
+@media (pointer: coarse) and (orientation: portrait) {
+    #rotate-overlay { display: flex; }
+}
+
+/* ===== ТЕЛЕФОН КӨЛДЕНЕҢ (биіктігі аз экран) ===== */
+@media (orientation: landscape) and (max-height: 560px) {
+    .game-title {
+        font-size: clamp(22px, 5vw, 36px);
+        letter-spacing: 3px;
+        margin: 0 0 4px 0;
+    }
+    .menu-progress {
+        font-size: 12px;
+        margin: 0 0 10px 0;
+    }
+    .menu-btn {
+        font-size: clamp(13px, 2.6vw, 16px);
+        padding: 8px 0;
+        margin: 4px 0;
+        letter-spacing: 2px;
+        width: min(260px, 44vw);
+    }
+    #instructions-modal h2, #settings-modal h2, #character-modal h2, #pause-menu h2 {
+        font-size: 20px;
+        letter-spacing: 3px;
+        margin: 0 0 8px 0;
+    }
+
+    /* Бас мәзір: батырмалар 2 бағанда */
+    #main-menu {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-content: center;
+        align-content: safe center;
+        column-gap: 14px;
+    }
+    #main-menu::before, #main-menu::after { display: none; }
+    #main-menu > .game-title,
+    #main-menu > .menu-progress,
+    #main-menu > p { flex: 0 0 100%; text-align: center; }
+
+    /* Пауза */
+    #pause-menu h2 { margin-bottom: 10px; }
+
+    /* Нұсқаулық */
+    #instructions-modal ul {
+        font-size: 12.5px;
+        line-height: 1.4;
+        margin: 0 0 10px 0;
+        max-width: min(720px, 94vw);
+    }
+
+    /* Параметрлер: 2 бағанды тор */
+    #settings-modal {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-content: flex-start;
+        column-gap: 18px;
+    }
+    #settings-modal h2,
+    #settings-modal .settings-section,
+    #settings-modal #quality-note { flex: 0 0 100%; text-align: center; margin-top: 0; margin-bottom: 8px; }
+    #settings-modal .settings-section { margin-top: 6px; }
+    #settings-modal .setting-row {
+        flex: 0 0 min(400px, calc(50% - 14px));
+        width: auto;
+        flex-wrap: nowrap;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 8px;
+        font-size: 13px;
+    }
+    #settings-modal .setting-row label {
+        width: auto;
+        flex: 1 1 auto;
+        text-align: left;
+    }
+    #volume-slider, #sensitivity-slider, #res-slider { width: 110px; flex: 0 0 auto; }
+    #volume-value, #sensitivity-value, #res-value { width: 40px; font-size: 12px; }
+    .setting-row select { font-size: 13px; padding: 4px 6px; }
+    .setting-sub { font-size: 11px; }
+    #settings-modal .menu-btn { margin-bottom: 4px; }
+    #settings-modal .menu-btn:last-child { margin-bottom: 4px; }
+
+    /* Кейіпкер таңдау */
+    #char-preview-wrap {
+        width: min(150px, 24vw);
+        height: min(150px, 42vh);
+        min-height: 100px;
+    }
+    .char-controls-row { margin-bottom: 6px; }
+    .char-nav-btn { width: 42px; height: 42px; }
+    #char-name { font-size: 16px; margin: 2px 0 4px 0; }
+    #char-desc { font-size: 12px; line-height: 1.3; margin: 0 0 6px 0; max-width: min(560px, 80vw); }
+    #char-status { margin-bottom: 8px; font-size: 12px; }
+    .char-btn-row { flex-direction: row; gap: 12px; }
+    .char-btn-row .menu-btn { width: min(190px, 38vw); }
+
+    /* Жеңіс терезесі */
+    #victory-modal {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-content: center;
+        align-content: safe center;
+        column-gap: 14px;
+    }
+    #victory-modal::before, #victory-modal::after { display: none; }
+    #victory-modal > .victory-title,
+    #victory-modal > .victory-sub,
+    #victory-modal > .victory-stats { flex: 0 0 100%; }
+    .victory-title { font-size: clamp(26px, 6vw, 40px); letter-spacing: 5px; margin-bottom: 4px; }
+    .victory-sub { font-size: 12px; margin-bottom: 12px; }
+    .victory-stats { gap: 10px; margin-bottom: 12px; }
+    .stat-box { padding: 6px 14px; min-width: 90px; }
+    .stat-value { font-size: 20px; margin-top: 2px; }
+
+    /* Ойын ішіндегі HUD */
+    #error-toast { font-size: clamp(14px, 3.4vw, 22px); letter-spacing: 2px; }
+    #joystick-zone { width: 112px; height: 112px; }
+    #joystick-knob { width: 46px; height: 46px; }
+    #mobile-actions { grid-template-columns: repeat(2, 54px); gap: 8px; }
+    .mob-btn { width: 54px; height: 54px; font-size: 9px; }
+    .mob-btn span.ico { font-size: 16px; }
+}
+
+/* Өте аласа экрандар (мысалы, шағын телефонның көлденең түрі) */
+@media (orientation: landscape) and (max-height: 400px) {
+    .menu-btn { padding: 6px 0; margin: 3px 0; font-size: 13px; }
+    .game-title { font-size: 22px; }
+    #instructions-modal ul { font-size: 11.5px; line-height: 1.3; }
+}
