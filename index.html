@@ -3,10 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#000000">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="apple-touch-icon" href="icon-192.png">
     <title>Anomaly Corridor - Horror Game</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- ТІК ҚАЛЫПТА КӨРСЕТІЛЕТІН ЕСКЕРТУ -->
+    <div id="rotate-overlay">
+        <div class="rot-ico">&#128241;</div>
+        <p>Телефонды көлденең бұраңыз</p>
+        <p class="rot-sub">Поверните телефон горизонтально<br>Rotate your phone to landscape</p>
+    </div>
+
     <!-- БАС МЕНЮ -->
     <div id="main-menu">
         <h1 class="game-title">Anomaly Corridor</h1>
@@ -253,7 +266,8 @@
                     'scares.js',
                     'anomalies.js',
                     'character.js',
-                    'main.js'
+                    'main.js',
+                    'mobile.js'
                 ]);
             }).then(function () {
                 var btns = document.querySelectorAll('#main-menu .menu-btn');
